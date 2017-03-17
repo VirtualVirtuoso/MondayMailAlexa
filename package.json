@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/VirtualVirtuoso/MondayMailAlexa/issues"
   },
-  "homepage": "https://github.com/VirtualVirtuoso/MondayMailAlexa#readme"
+  "homepage": "https://github.com/VirtualVirtuoso/MondayMailAlexa#readme",
+  "dependencies": {
+    "alexa-sdk": "^1.0.7"
+  }
 }
