@@ -1,0 +1,22 @@
+{
+  "name": "uom_cs_monday_mail",
+  "version": "1.0.0",
+  "description": "Alexa plugin which allows you to read the Monday Mail from the School of Computer Science, University of Manchester.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/VirtualVirtuoso/MondayMailAlexa.git"
+  },
+  "keywords": [
+    "monday"
+  ],
+  "author": "Struan McDonough",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/VirtualVirtuoso/MondayMailAlexa/issues"
+  },
+  "homepage": "https://github.com/VirtualVirtuoso/MondayMailAlexa#readme"
+}
