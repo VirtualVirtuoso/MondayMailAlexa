@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/VirtualVirtuoso/MondayMailAlexa#readme",
   "dependencies": {
-    "alexa-sdk": "^1.0.7"
+    "alexa-sdk": "^1.0.7",
+    "scraperjs": "^1.2.0"
   }
 }
