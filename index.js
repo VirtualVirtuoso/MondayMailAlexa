@@ -5,16 +5,23 @@ var APP_ID = require('./exclude/id'); // Replace with your own application ID
 
 var mailMessages;
 var alreadyRetrieved = false;
+var currentIndex = 0;
+var positions = ["First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth", "Tenth",
+    "Eleventh", "Twelfth", "Thirteenth", "Fourteenth", "Fifteenth", "Sixteenth", "Seventeenth", "Eighteenth",
+    "Nineteenth", "Twentieth"];
 
 var languageStrings = {
     "en": {
         "translation": {
             "SKILL_NAME": "The Monday Mail",
-            "WELCOME_MESSAGE": "Welcome to Kilburn's Monday Mail. If you need help, just ask!",
-            "HELP_MESSAGE": "You can ask me what's new. While a message is playing, you can also ask to skip the message, to go back, or to repeat the message, just like an answer phone! What can I help you with?",
+            "WELCOME_MESSAGE": "Welcome to Kilburn's Monday Mail. Say start to continue, or help for instructions.",
+            "HELP_MESSAGE": "While a message is playing, you can say Alexa Next, Alexa Repeat or Alexa Back to navigate. Say start to continue...",
             "HELP_REPROMPT": "What can I help you with?",
             "STOP_MESSAGE": "Goodbye!",
-            "UNHANDLED_MESSAGE": "Sorry, I didn't understand your question. How can I help?"
+            "UNHANDLED_MESSAGE": "Sorry, I didn't understand your question. How can I help?",
+            "NEXT_INDICATIOR": "Say next to continue...",
+            "CANT_GO_BACK": "There isn't a previous entry. What would you like me to do now?",
+            "END_OF_MESSAGES": "There are no more messages to read. To continue, say Alexa Restart"
         }
     },
     "de": {
@@ -28,7 +35,7 @@ var languageStrings = {
 // to register everything we code here, so we're able to react to how the user speaks to the system
 exports.handler = function(event, context, callback){
     var alexa = Alexa.handler(event, context);
-    alexa.APP_ID = APP_ID;
+    alexa.appId = APP_ID;
     alexa.resources = languageStrings;
     alexa.registerHandlers(handlers);
     alexa.execute();
@@ -40,20 +47,74 @@ var handlers = {
     },
     'Welcome': function(){
         var speechOutput = this.t("WELCOME_MESSAGE");
-        this.emit(':tellWithCard', speechOutput, this.t("SKILL_NAME"), speechOutput);
+        currentIndex = 0;
+        this.emit(':ask', speechOutput, this.t("HELP_REPROMPT"));
     },
-    'OverviewIntent': function(){
+    'AMAZON.NextIntent': function(){
+        var thisAlexa = this;
+        var articleNumber = positions[currentIndex];
+
+        if(!alreadyRetrieved){
+            WebsiteData.then(function (result) {
+                alreadyRetrieved = true;
+                mailMessages = result;
+                var speechOutput = articleNumber + " Entry: " + mailMessages[currentIndex]
+                    + " Say next to continue...";
+                currentIndex++;
+                thisAlexa.emit(':ask', speechOutput, thisAlexa.t("HELP_REPROMPT"));
+            });
+        } else {
+            var speechOutput;
+            if(currentIndex < mailMessages.length){
+                speechOutput = articleNumber + " Entry: " + mailMessages[currentIndex]
+                    + " Say next to continue...";
+                currentIndex++;
+                thisAlexa.emit(':ask', speechOutput, thisAlexa.t("HELP_REPROMPT"));
+            } else {
+                speechOutput = thisAlexa.t("END_OF_MESSAGES");
+                thisAlexa.emit(':ask', speechOutput, speechOutput);
+            }
+
+        }
+    },
+    'AMAZON.PreviousIntent': function(){
+        if(currentIndex == 1 || currentIndex == 0) {
+            this.emit(':ask', this.t("CANT_GO_BACK"))
+        } else {
+            currentIndex -= 2;
+            var articleNumber = positions[currentIndex];
+            var speechOutput = articleNumber + " Entry: " + mailMessages[currentIndex]
+                + " Say next to continue...";
+            currentIndex++;
+            this.emit(':ask', speechOutput, this.t("HELP_REPROMPT"));
+        }
+    },
+    'AMAZON.StartOverIntent': function(){
+        currentIndex = 0;
+        var articleNumber = positions[currentIndex];
+        var speechOutput = articleNumber + " Entry: " + mailMessages[currentIndex]
+            + " Say next to continue...";
+        currentIndex++;
+        this.emit(':ask', speechOutput, this.t("HELP_REPROMPT"));
+    },
+    'AMAZON.RepeatIntent': function(){
+        currentIndex--;
+        var articleNumber = positions[currentIndex];
         var thisAlexa = this;
         if(!alreadyRetrieved){
             WebsiteData.then(function (result) {
                 alreadyRetrieved = true;
                 mailMessages = result;
-                var speechOutput = mailMessages[0];
-                thisAlexa.emit(':tellWithCard', speechOutput, thisAlexa.t("SKILL_NAME"), speechOutput);
+                var speechOutput = articleNumber + " Entry: " + mailMessages[currentIndex]
+                    + " Say next to continue...";
+                currentIndex++;
+                thisAlexa.emit(':ask', speechOutput, thisAlexa.t("HELP_REPROMPT"));
             });
         } else {
-            var speechOutput = mailMessages[0];
-            thisAlexa.emit(':tellWithCard', speechOutput, thisAlexa.t("SKILL_NAME"), speechOutput);
+            var speechOutput = articleNumber + " Entry: " + mailMessages[currentIndex]
+                + " Say next to continue...";
+            currentIndex++;
+            thisAlexa.emit(':ask', speechOutput, thisAlexa.t("HELP_REPROMPT"));
         }
     },
     'AMAZON.HelpIntent': function(){
