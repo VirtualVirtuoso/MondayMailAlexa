@@ -1,0 +1,12 @@
+{
+  "en": {
+    "SKILL_NAME": "The Monday Mail",
+    "WELCOME_MESSAGE": "Welcome to the Monday Mail. If you need help, just ask!",
+    "HELP_MESSAGE": "You can ask me what's new. While a message is playing, you can also ask to skip the message, to go back, or to repeat the message, just like an answer phone! What can I help you with?",
+    "HELP_REPROMPT": "What can I help you with?",
+    "STOP_MESSAGE": "Goodbye!"
+  },
+  "de": {
+    "TODO": "Do we have any Germans in Kilburn?"
+  }
+}
